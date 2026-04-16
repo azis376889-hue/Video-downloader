@@ -1,0 +1,27 @@
+// 🔥 REAL API INTEGRATION
+const API_BASE = `${window.location.protocol}//${window.location.host}`;
+
+async function fetchVideoData(url) {
+    showLoading('🔍 Detecting platform...');
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/download`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, platform: currentPlatform })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            updateProgress(100);
+            return result.data;
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        showToast('Using fallback mode...', 'warning');
+        return generateEnhancedVideoData(detectPlatform(url), url);
+    }
+}
